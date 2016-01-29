@@ -10,6 +10,9 @@ import TextInput from '~/app/views/shared/text_input'
 import EmailInput from '~/app/views/shared/email_input'
 import PasswordInput from '~/app/views/shared/password_input'
 
+// Actions
+import { updateFormValue } from '~/app/actions/index'
+
 class Registration extends React.Component {
   static propTypes = {
     first_name: PropTypes.string.isRequired,
@@ -25,6 +28,7 @@ class Registration extends React.Component {
     const { email, email_confirm, first_name, last_name, password } = this.props;
 
     if (email === email_confirm) {
+      this.props.dispatch(createUser(email, first_name, last_name, password));
       fetch('https://geekbook-be.herokuapp.com/new_user', {
         method: 'POST',
         headers: {
@@ -44,11 +48,11 @@ class Registration extends React.Component {
 
   valueChanged(ev) {
     const { name, value } = ev.target;
-    this.props.dispatch({ type: 'updateFormValue', name, value })
+    this.props.dispatch( updateFormValue(name, value))
   }
 
   render() {
-    const { first_name, last_name, email, email_confirm, password} = this.props;
+    const { disabled, first_name, last_name, email, email_confirm, password} = this.props;
     return (
       <div className='registration'>
         <form className='registration-form' onSubmit={this.SubmitForm}>
@@ -103,11 +107,11 @@ class Registration extends React.Component {
               placeholder="Password"
               errorMessage="Password is required"
               required />
-          <button type='submit'>Sign Up</button>
+          <button type='submit' disabled={disabled}>Sign Up</button>
         </form>
       </div>
     )
   };
 }
 
-export default connect(state => state)(Registration);
+export default connect(state => state.registration)(Registration);
